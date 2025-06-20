@@ -1,14 +1,36 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet } from 'react-native';
 
 type TextBoxProps = { text: string };
 
 export const TextBox: React.FC<TextBoxProps> = ({ text }) => (
-  <View style={styles.box}>
-    <Text>{text}</Text>
+  <View style={styles.container}>
+    <ScrollView
+      style={styles.box}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={true}
+    >
+      <Text style={styles.text}>{text}</Text>
+    </ScrollView>
   </View>
 );
 
 const styles = StyleSheet.create({
-  box: { height: 100, borderWidth: 1, borderColor: '#ccc', padding: 8, marginBottom: 16 },
+  container: {
+    marginTop: 16,
+    flexGrow: 1,
+  },
+  box: {
+    height: 400,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 12,
+  },
+  contentContainer: {
+    flexGrow: 1,
+  },
+  text: {
+    color: '#000',
+  },
 });
