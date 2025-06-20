@@ -40,13 +40,10 @@ const App = () => {
     setApiError(null);
     setLoading(true);
     try {
-      console.log(`[Frontend] Sending ${mode} request to ${BACKEND_URL}/${mode}`);
-      const options: CameraOptions = {
+      console.log(`[Frontend] Sending ${mode} request to ${BACKEND_URL}/${mode}`);      const options: CameraOptions = {
         mediaType: 'photo',
         saveToPhotos: false,
-        quality: 0.2,        // compress more aggressively (20% JPEG)
-        maxWidth: 600,       // reduce dimensions to 600px
-        maxHeight: 600,
+        // Removed all compression settings to send full-quality images
       };
       const result = await launchCamera(options);
       if (result.assets && result.assets.length > 0) {
