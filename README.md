@@ -73,8 +73,10 @@ AZURE_AI_MODEL_DEPLOYMENT=
 AI_PROVIDER=github
 ```
 
-### 4. Update Configuration
-Edit `csharp-backend/appsettings.json`:
+⚠️ **Important**: Never commit the `.env` file to version control!
+
+### 4. Update Backend Configuration
+Edit `csharp-backend/appsettings.json` and update the Python paths:
 ```json
 {
   "Vision": {
@@ -334,47 +336,66 @@ python github_vision.py <base64_image> <github_token>
 
 ### Common Issues
 
-1. **Backend Connection Failed**:
-   - Check if C# backend is running on port 5000
-   - Verify IP address in React Native app
+1. **"Backend: Error" in React Native App**:
+   - Check if C# backend is running: `dotnet run` in `csharp-backend/` folder
+   - Verify your PC's IP address: `ipconfig` (look for WiFi adapter IPv4)
+   - Update `src/App.tsx` with correct IP: `const BACKEND_URL = 'http://YOUR_IP:5000'`
    - Ensure Windows Firewall allows port 5000
-   - Confirm both devices on same WiFi network
+   - Confirm both PC and phone are on same WiFi network
 
 2. **Python Integration Errors**:
-   - Verify conda environment is active
-   - Check Python path in `appsettings.json`
-   - Ensure all Python packages are installed
-   - Check Python scripts are in correct directory
+   - Activate conda environment: `conda activate confirmed_vision_app`
+   - Check Python path in `appsettings.json` matches your conda environment
+   - Verify Python packages installed: `pip list` (should show requests, pillow, etc.)
+   - Check Python scripts are in `csharp-backend/python_scripts/` directory
 
-3. **Android Build Issues**:
-   - Clean and rebuild: `cd android && ./gradlew clean`
-   - Check Android SDK installation
-   - Verify USB debugging is enabled
-   - Reset Metro bundler cache: `npx react-native start --reset-cache`
+3. **"GitHub API error" Messages**:
+   - Verify GitHub token is valid and not expired
+   - Check token has necessary permissions
+   - Ensure `.env` file is in `csharp-backend/` directory
+   - Test token manually: visit [GitHub AI Models](https://github.com/marketplace/models)
 
-4. **AI Processing Failures**:
-   - Verify GitHub token is valid and has permissions
-   - Check network connectivity
-   - Ensure image is valid format (JPEG/PNG)
-   - Monitor backend logs for detailed error messages
+4. **Android Build/Connection Issues**:
+   - Clean build: `cd android && ./gradlew clean && cd ..`
+   - Reset Metro cache: `npx react-native start --reset-cache`
+   - Check device connection: `adb devices`
+   - Enable USB debugging on Android device
+   - Try different USB cable or port
+
+5. **"Address already in use" Error**:
+   - Kill existing processes: `Get-Process -Name "dotnet" | Stop-Process -Force`
+   - Change port in `appsettings.json` if needed
+   - Restart your terminal/command prompt
 
 ### Debug Commands
 
 ```bash
-# Check backend logs
-cd csharp-backend && dotnet run
+# Check if backend is running
+curl http://localhost:5000/health
+# Should return: {"status":"ok","timestamp":"...","version":"1.0.0"}
 
 # Check Android device connection
 adb devices
+# Should show your device in the list
 
-# View Android logs
+# View backend logs (run in csharp-backend directory)
+dotnet run
+# Watch for any error messages
+
+# View Android app logs
 npx react-native log-android
 
-# Test backend health
-curl http://localhost:5000/health
-
 # Check Python environment
-conda list
+conda activate confirmed_vision_app
+python --version
+pip list | grep -E "(requests|pillow)"
+
+# Test Python script directly
+cd csharp-backend/python_scripts
+python github_vision.py "base64_image_here" "your_github_token"
+
+# Reset React Native cache
+npx react-native start --reset-cache
 ```
 
 ## 📝 Environment Variables
@@ -396,13 +417,15 @@ PORT=5000
 ## 🎯 Features
 
 - ✅ **Camera Integration**: Native camera access with high-quality image capture
-- ✅ **Vision AI Processing**: Advanced text extraction using GitHub AI models
+- ✅ **Vision AI Processing**: Advanced text extraction using GitHub AI (Meta Llama-3.2-11B-Vision-Instruct)
 - ✅ **Real-time Processing**: Live image processing with loading indicators
-- ✅ **Cross-platform**: React Native app works on Android (iOS ready)
-- ✅ **Scalable Backend**: C# .NET backend with Python AI integration
+- ✅ **Cross-platform Ready**: React Native app works on Android (iOS support ready)
+- ✅ **High-Performance Backend**: C# .NET 8.0 with Python AI integration
+- ✅ **Dual AI Support**: GitHub AI (primary) + Azure AI (fallback)
 - ✅ **Error Handling**: Comprehensive error handling and user feedback
-- ✅ **Logging**: Detailed logging for debugging and monitoring
-- ✅ **Configuration**: Environment-based configuration for different deployments
+- ✅ **Structured Logging**: Detailed logging with Serilog for debugging
+- ✅ **Environment Configuration**: Secure credential management with .env files
+- ✅ **File Management**: Automatic cleanup of temporary uploaded images
 
 ## 🔄 Version History
 
