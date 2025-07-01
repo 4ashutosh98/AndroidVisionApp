@@ -1,8 +1,6 @@
-# Android Vision App - React Native OCR & Vision LLM
+# Android Vision App - React Native Vision LLM
 
-A React Native Android application that provides two types of image text extraction:
-1. **Traditional OCR** - Placeholder for future OCR implementation
-2. **Vision LLM** - Uses Azure AI Inference SDK with multimodal models (GitHub AI for development, Azure AI for production)
+A React Native Android application that provides AI-powered text extraction from images using Vision LLM technology via Azure AI Inference SDK (GitHub AI for development, Azure AI for production).
 
 ## Architecture Overview
 
@@ -268,7 +266,7 @@ const options: CameraOptions = {
 };
 ```
 
-This ensures maximum accuracy for both OCR and Vision LLM processing.
+This ensures maximum accuracy for Vision LLM processing.
 
 ## Running the Application
 
@@ -334,16 +332,6 @@ Or build and run directly from Android Studio.
   4. Returns extracted text from multimodal LLM
   5. Automatically deletes uploaded image
 - **Response**: `{"result": "extracted text", "imageUrl": "public_url"}`
-
-### Traditional OCR (Placeholder)
-- **URL**: `POST /ocr`
-- **Content-Type**: `multipart/form-data`
-- **Body**: Image file as `image` field
-- **Process**:
-  1. Saves uploaded image to `uploads/` folder
-  2. Logs receipt (OCR logic not yet implemented)
-  3. Automatically deletes uploaded image
-- **Response**: `{"result": "OCR placeholder message", "imageUrl": "public_url"}`
 
 ## Azure AI Inference SDK Usage
 
@@ -467,7 +455,7 @@ To migrate from development (GitHub AI) to production (Azure AI):
 
 ### UI Components
 - **Health Status Indicator**: Shows backend connectivity
-- **Two Action Buttons**: OCR and Vision LLM processing
+- **Vision LLM Button**: Initiates AI-powered text extraction
 - **Loading Indicator**: Shows during model inference
 - **Error Display**: Shows API errors
 - **Image Preview**: Displays captured image
@@ -475,10 +463,10 @@ To migrate from development (GitHub AI) to production (Azure AI):
 - **Clear Function**: Resets image and text
 
 ### Image Processing Flow
-1. User taps OCR or Vision LLM button
+1. User taps Vision LLM button
 2. Camera launches with full-quality settings
 3. User captures image
-4. Image sent to backend endpoint
+4. Image sent to backend vision endpoint
 5. Backend processes with AI model
 6. Results displayed in text box
 7. Image automatically cleaned up on backend

@@ -8,14 +8,15 @@ import {TextBox} from './components/TextBox';
 import {ImageViewer} from './components/ImageViewer';
 
 // Replace with your dev machine IP reachable by Android device
-const BACKEND_URL = 'http://10.0.0.207:3000';
+// Updated to connect to C# backend on port 5000
+const BACKEND_URL = 'http://10.0.0.207:5000';
 
 const App = () => {
   // Health check handshake state
   const [handshake, setHandshake] = useState<'Connecting'|'Connected'|'Error'>('Connecting');
   const [text, setText] = useState<string>('');
   const [photoUri, setPhotoUri] = useState<string | null>(null);
-  const [activeButton, setActiveButton] = useState<'ocr' | 'vision' | null>(null);
+  const [activeButton, setActiveButton] = useState<'vision' | null>(null);
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -33,8 +34,8 @@ const App = () => {
       });
   }, []);
 
-  // Capture photo and send to backend; mode is 'ocr' or 'vision'
-  const captureAndSend = async (mode: 'ocr' | 'vision') => {
+  // Capture photo and send to backend; only vision mode supported
+  const captureAndSend = async (mode: 'vision') => {
     if (Platform.OS !== 'android') return;
     setActiveButton(mode);
     setApiError(null);
@@ -55,7 +56,7 @@ const App = () => {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
         console.log('[Frontend] Received response:', res.data);
-        const output = mode === 'ocr' ? res.data.text : res.data.result;
+        const output = res.data.result;
         setText(output);
       }
     } catch (e: any) {
@@ -85,7 +86,6 @@ const App = () => {
       {/* API error message */}
       {apiError && <Text style={styles.errorText}>{apiError}</Text>}
       <ButtonRow
-        onOcr={() => captureAndSend('ocr')}
         onVision={() => captureAndSend('vision')}
         activeButton={activeButton}
       />

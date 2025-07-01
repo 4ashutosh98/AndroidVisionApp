@@ -42,6 +42,56 @@ npm-debug.log
 yarn-error.log
 .env
 
+# .NET Core / C# backend
+#
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.props
+*.targets
+*.deps.json
+*.runtimeconfig.json
+*.AssemblyInfo.cs
+*.AssemblyInfoInputs.cache
+*.GeneratedMSBuildEditorConfig.editorconfig
+*.GlobalUsings.g.cs
+*.MvcApplicationPartsAssemblyInfo.cs
+*.MvcApplicationPartsAssemblyInfo.cache
+*.sourcelink.json
+*.nuget.cache
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+project.assets.json
+project.nuget.cache
+*.Up2Date
+
+# C# backend logs
+logs/
+*.log
+*.txt
+
+# C# backend uploads directory
+uploads/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Environment variables (already covered but ensuring it's here)
+.env
+.env.local
+.env.development
+.env.production
+
 # fastlane
 #
 # It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the

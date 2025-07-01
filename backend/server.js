@@ -90,7 +90,7 @@ async function initializeServer() {
     const messages = [
       {
         role: 'system',
-        content: 'You are a helpful assistant that can read and extract text from images. Act like an OCR tool.'
+        content: 'You are a helpful assistant that can read and extract text from images using advanced vision understanding.'
       },
       {
         role: 'user',
@@ -149,32 +149,7 @@ async function initializeServer() {
   }
 });
 
-// Traditional OCR endpoint: just save image and log message
-  app.post('/ocr', upload.single('image'), async (req, res) => {
-    console.log('[Backend] /ocr endpoint hit from', req.ip);
-    console.log('[Backend] multer file info:', req.file);
-    
-    if (req.file) {
-      console.log('[Backend] File saved at:', req.file.destination + '/' + req.file.filename);
-      console.log('[Backend] Traditional OCR logic not yet implemented - just saved the image');
-      
-      const filename = req.file.filename;
-      const imageUrl = `${req.protocol}://${req.get('host')}/uploads/${filename}`;
-      console.log('[Backend] Image available at:', imageUrl);
-      
-      res.json({ 
-        result: 'Traditional OCR is not yet implemented. Image has been saved for future processing.', 
-        imageUrl 
-      });
-      
-      // Clean up the uploaded file after response
-      const filePath = path.join(req.file.destination, req.file.filename);
-      await deleteUploadedFile(filePath);
-    } else {
-      console.warn('[Backend] No file received by multer!');
-      res.status(400).json({ error: 'No image file received' });
-    }
-  });
+
 
   const port = process.env.PORT || 3000;
   app.listen(port, () => console.log(`Backend listening on port ${port}`));
