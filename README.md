@@ -1,620 +1,436 @@
-# Android Vision App - React Native Vision LLM
+# Android Vision App
 
-A React Native Android application that provides AI-powered text extraction from images using Vision LLM technology via Azure AI Inference SDK (GitHub AI for development, Azure AI for production).
+A React Native mobile application with C# backend for vision-based text extraction using GitHub AI Vision models. This application allows users to take photos and extract text using advanced AI vision capabilities.
 
-## Architecture Overview
+## 🏗️ Architecture
 
-- **Frontend**: React Native app with camera integration and image capture
-- **Backend**: Node.js/Express server with image processing and AI inference
-- **AI Service**: Multimodal LLM via Azure AI Inference SDK (GitHub AI for development, Azure AI for production)
-- **Image Storage**: Temporary local storage with automatic cleanup
+### Frontend
+- **React Native** (v0.80.0) - Cross-platform mobile app
+- **TypeScript** - Type-safe development
+- **Axios** - HTTP client for API communication
+- **React Native Image Picker** - Camera and gallery integration
 
-## Strategic Architecture Decisions
+### Backend
+- **C# .NET 8.0** - High-performance web API
+- **ASP.NET Core** - Web framework
+- **Python.NET** - Python integration for AI processing
+- **Serilog** - Structured logging
+- **DotNetEnv** - Environment variable management
 
-### Why Azure AI Inference SDK?
-This project uses the **Azure AI Inference SDK** for all AI operations, even when connecting to GitHub AI models. This strategic choice provides:
+### AI Processing
+- **GitHub AI** (Primary) - Meta Llama-3.2-11B-Vision-Instruct model
+- **Azure AI** (Alternative) - Azure OpenAI vision models
+- **Python Scripts** - Image processing and AI integration
 
-1. **Seamless Migration Path**: Switch from GitHub AI to Azure AI with minimal code changes
-2. **Consistent API Interface**: Same SDK methods regardless of the underlying AI provider
-3. **Enterprise Readiness**: Built for production Azure environments
-4. **Future-Proofing**: Easy integration with Azure's expanding AI service portfolio
+## 📋 Prerequisites
 
-### Development vs Production Setup
-- **Development**: GitHub AI models (rate-limited but free with GitHub Pro)
-- **Production**: Azure AI services (enterprise-scale, SLA-backed, fully managed)
+### System Requirements
+- **Windows 10/11** (for development)
+- **.NET 8.0 SDK** ([Download](https://dotnet.microsoft.com/download/dotnet/8.0))
+- **Python 3.11** (via Conda/Anaconda)
+- **Node.js 18+** (for React Native)
+- **Android Studio** (for Android development)
+- **Git** for version control
 
-The backend code is designed to switch between providers by simply changing the endpoint URL and authentication credentials.
+### Mobile Development
+- **Android device** with USB debugging enabled
+- **USB cable** for device connection
+- **WiFi network** (both PC and phone on same network)
 
-## Prerequisites
+## 🚀 Quick Start
 
-### Required Software
-- **Node.js** (v18 or higher)
-- **React Native CLI** (`npm install -g @react-native-community/cli`)
-- **Android Studio** with Android SDK
-- **Java Development Kit (JDK 17)**
-- **Git**
-
-### Required Accounts
-- **GitHub Account** with GitHub Pro (for development with GitHub AI models)
-- **Azure Subscription** (for production with Azure AI services)
-- **GitHub Personal Access Token** (development setup)
-- **Azure AI Service Keys** (production setup)
-
-### Android Development Setup
-Complete the [React Native Environment Setup](https://reactnative.dev/docs/set-up-your-environment) for Android development.
-
-## Setup Instructions
-
-### 1. Clone and Install Dependencies
-
+### 1. Clone the Repository
 ```bash
-# Clone the repository
-git clone <your-repo-url>
+git clone <repository-url>
 cd AndroidVisionApp
-
-# Install frontend dependencies
-npm install
-
-# Install backend dependencies
-cd backend
-npm install
-cd ..
 ```
 
-## AI Service Configuration
-
-### Option A: GitHub AI Setup (Development)
-
-This is the current development configuration using GitHub AI models as a cost-effective development solution with GitHub Pro.
-
-#### Step A.1: Get GitHub Personal Access Token
-1. Go to [GitHub Settings > Developer Settings > Personal Access Tokens](https://github.com/settings/tokens)
-2. Click "Generate new token (classic)"
-3. Select scopes:
-   - `repo` (Full control of private repositories)
-   - `read:packages` (Download packages from GitHub Package Registry)
-4. Copy the generated token - **you won't see it again!**
-
-#### Step A.2: Create Backend Environment File (GitHub AI)
-Create a `.env` file in the `backend/` directory:
-
+### 2. Set Up Python Environment
 ```bash
-cd backend
-touch .env
+# Create conda environment
+conda create -n confirmed_vision_app python=3.11
+conda activate confirmed_vision_app
+
+# Install Python dependencies
+cd csharp-backend/python_scripts
+pip install -r requirements.txt
 ```
 
-Add your GitHub token to the `.env` file:
+### 3. Configure Environment Variables
+Create `csharp-backend/.env` file:
 ```env
-# GitHub AI API Configuration (Development)
-GITHUB_TOKEN=your_github_personal_access_token_here
-PORT=3000
+# GitHub AI Configuration (Development)
+GITHUB_TOKEN=your_github_token_here
+
+# Azure AI Configuration (Production) - Optional
+AZURE_AI_KEY=
+AZURE_AI_ENDPOINT=
+AZURE_AI_REGION=
+AZURE_AI_MODEL_NAME=gpt-4o
+AZURE_AI_MODEL_DEPLOYMENT=
+
+# AI Provider Selection
 AI_PROVIDER=github
 ```
 
-### Option B: Azure AI Setup (Production)
-
-For production deployment, switch to Azure AI services for enterprise-grade performance, reliability, and SLA.
-
-#### Step B.1: Create Azure AI Service
-1. **Log into Azure Portal**: https://portal.azure.com
-2. **Create AI Service**:
-   - Click "Create a resource"
-   - Search for "Azure AI services" or "Cognitive Services"
-   - Select "Azure AI services multi-service account"
-3. **Configure the Service**:
-   - **Subscription**: Choose your Azure subscription
-   - **Resource Group**: Create new or select existing
-   - **Region**: Choose region closest to your users (e.g., East US, West Europe)
-   - **Name**: Choose a unique name (e.g., `your-company-ai-service`)
-   - **Pricing Tier**: Select appropriate tier (S0 for production, F0 for testing)
-4. **Click "Review + Create"** then **"Create"**
-
-#### Step B.2: Get Azure AI Service Keys
-1. **Navigate to your AI service** in the Azure Portal
-2. **Go to "Keys and Endpoint"** in the left sidebar
-3. **Copy the following**:
-   - **Key 1** (or Key 2)
-   - **Endpoint URL** (e.g., `https://your-service.cognitiveservices.azure.com/`)
-   - **Region** (e.g., `eastus`)
-
-#### Step B.3: Create Backend Environment File (Azure AI)
-Create a `.env` file in the `backend/` directory:
-
-```bash
-cd backend
-touch .env
-```
-
-Add your Azure AI credentials to the `.env` file:
-```env
-# Azure AI API Configuration (Production)
-AZURE_AI_KEY=your_azure_ai_service_key_here
-AZURE_AI_ENDPOINT=https://your-service.cognitiveservices.azure.com/
-AZURE_AI_REGION=eastus
-PORT=3000
-AI_PROVIDER=azure
-```
-
-#### Step B.4: Deploy AI Models (Azure)
-
-For Azure AI, you'll need to deploy the vision model:
-
-1. **Go to Azure AI Studio**: https://ai.azure.com/
-2. **Navigate to Model Catalog**
-3. **Find Vision Models**:
-   - Search for "GPT-4 Vision" or "GPT-4o" for multimodal capabilities
-   - Or "Llama-3.2-Vision" if available in your region
-4. **Deploy the Model**:
-   - Click "Deploy"
-   - Choose deployment name (e.g., `vision-model-deployment`)
-   - Select compute resources
-   - Configure scaling settings
-5. **Note the Deployment Details**:
-   - Deployment name
-   - Model version
-   - Endpoint URL
-
-Update your `.env` file with deployment details:
-```env
-# Azure AI API Configuration (Production)
-AZURE_AI_KEY=your_azure_ai_service_key_here
-AZURE_AI_ENDPOINT=https://your-service.cognitiveservices.azure.com/
-AZURE_AI_REGION=eastus
-AZURE_AI_MODEL_DEPLOYMENT=vision-model-deployment
-AZURE_AI_MODEL_NAME=gpt-4o
-PORT=3000
-AI_PROVIDER=azure
-```
-
-**Important Security Notes**: 
-- Replace placeholder values with your actual credentials
-- **Never commit the `.env` file to version control**
-- The `.env` file is already in `.gitignore`
-- Use Azure Key Vault for production credential management
-- Rotate API keys regularly for security
-
-### 3. Backend AI Client Configuration
-
-### 3. Backend AI Client Configuration
-
-The backend is architected to work with both GitHub AI and Azure AI using the same Azure AI Inference SDK. This provides a seamless migration path from development to production.
-
-#### Current Implementation (GitHub AI)
-```javascript
-// GitHub AI multimodal inference (Development)
-const ghEndpoint = 'https://models.github.ai/inference';
-const ghToken = process.env.GITHUB_TOKEN;
-const ghModel = 'meta/Llama-3.2-11B-Vision-Instruct';
-const ghClient = ModelClient(ghEndpoint, new AzureKeyCredential(ghToken));
-```
-
-#### Azure AI Implementation (Production Ready)
-To switch to Azure AI, update `backend/server.js`:
-
-```javascript
-// Azure AI multimodal inference (Production)
-const azureEndpoint = process.env.AZURE_AI_ENDPOINT;
-const azureKey = process.env.AZURE_AI_KEY;
-const azureModel = process.env.AZURE_AI_MODEL_NAME || 'gpt-4o';
-const azureClient = ModelClient(azureEndpoint, new AzureKeyCredential(azureKey));
-```
-
-#### Universal Configuration (Recommended)
-For a production-ready setup that supports both providers:
-
-```javascript
-// Universal AI client configuration
-const AI_PROVIDER = process.env.AI_PROVIDER || 'github';
-
-let aiClient, aiModel, aiEndpoint;
-
-if (AI_PROVIDER === 'azure') {
-  aiEndpoint = process.env.AZURE_AI_ENDPOINT;
-  aiClient = ModelClient(aiEndpoint, new AzureKeyCredential(process.env.AZURE_AI_KEY));
-  aiModel = process.env.AZURE_AI_MODEL_NAME || 'gpt-4o';
-  console.log('[Backend] Using Azure AI service');
-} else {
-  aiEndpoint = 'https://models.github.ai/inference';
-  aiClient = ModelClient(aiEndpoint, new AzureKeyCredential(process.env.GITHUB_TOKEN));
-  aiModel = 'meta/Llama-3.2-11B-Vision-Instruct';
-  console.log('[Backend] Using GitHub AI service');
-}
-```
-
-#### Key Backend Features:
-- **Automatic uploads folder creation** on server startup
-- **Multer disk storage** for temporary image files
-- **Static file serving** for image access during inference
-- **Automatic file cleanup** after processing
-- **CORS enabled** for React Native frontend
-- **Health check endpoint** for connectivity testing
-
-### 4. Frontend Configuration
-
-#### Step 4.1: Update Backend URL
-Edit `src/App.tsx` and update the `BACKEND_URL` with your development machine's IP:
-
-```typescript
-// Replace with your dev machine IP reachable by Android device
-const BACKEND_URL = 'http://YOUR_IP_ADDRESS:3000';
-```
-
-To find your IP address:
-- **Windows**: `ipconfig` (look for IPv4 Address)
-- **Mac/Linux**: `ifconfig` or `ip addr show`
-
-#### Step 4.2: Android Network Configuration
-The app already includes network security configuration in `android/app/src/debug/AndroidManifest.xml`:
-
-```xml
-<application
-  android:networkSecurityConfig="@xml/network_security_config"
-  android:usesCleartextTraffic="true">
-```
-
-This allows HTTP connections to your development server.
-
-### 5. Image Capture Configuration
-
-The frontend is configured for **full-quality image capture** without compression:
-
-```typescript
-const options: CameraOptions = {
-  mediaType: 'photo',
-  saveToPhotos: false,
-  // Removed all compression settings to send full-quality images
-};
-```
-
-This ensures maximum accuracy for Vision LLM processing.
-
-## Running the Application
-
-### 1. Start the Backend Server
-
-```bash
-cd backend
-npm start
-```
-
-You should see output based on your AI provider:
-
-**GitHub AI:**
-```
-[Backend] Uploads directory ensured: /path/to/backend/uploads
-[Backend] uploads directory: /path/to/backend/uploads
-[Backend] Using GitHub AI service
-GITHUB_TOKEN= true
-Backend listening on port 3000
-```
-
-**Azure AI:**
-```
-[Backend] Uploads directory ensured: /path/to/backend/uploads
-[Backend] uploads directory: /path/to/backend/uploads
-[Backend] Using Azure AI service
-AZURE_AI_KEY= true
-Backend listening on port 3000
-```
-
-### 2. Start React Native Metro Server
-
-In a new terminal:
-```bash
-# From the root directory
-npm start
-```
-
-### 3. Run the Android App
-
-In another terminal:
-```bash
-npm run android
-```
-
-Or build and run directly from Android Studio.
-
-## API Endpoints
-
-### Health Check
-- **URL**: `GET /health`
-- **Response**: `{"status": "ok"}`
-- **Purpose**: Frontend connectivity testing
-
-### Vision LLM Processing
-- **URL**: `POST /vision`
-- **Content-Type**: `multipart/form-data`
-- **Body**: Image file as `image` field
-- **Process**:
-  1. Saves uploaded image to `uploads/` folder
-  2. Creates public URL for image access
-  3. Sends image to AI model (GitHub AI or Azure AI based on configuration)
-  4. Returns extracted text from multimodal LLM
-  5. Automatically deletes uploaded image
-- **Response**: `{"result": "extracted text", "imageUrl": "public_url"}`
-
-## Azure AI Inference SDK Usage
-
-### Dependencies
+### 4. Update Configuration
+Edit `csharp-backend/appsettings.json`:
 ```json
 {
-  "@azure-rest/ai-inference": "latest",
-  "@azure/core-auth": "latest"
-}
-```
-
-### Implementation
-```javascript
-import ModelClient, { isUnexpected } from '@azure-rest/ai-inference';
-import { AzureKeyCredential } from '@azure/core-auth';
-
-// Initialize client (works for both GitHub AI and Azure AI)
-const aiClient = ModelClient(endpoint, new AzureKeyCredential(apiKey));
-
-// Vision inference request (identical API for both providers)
-const response = await aiClient.path('/chat/completions').post({
-  body: {
-    messages: [
-      {
-        role: 'system',
-        content: 'You are a helpful assistant that can read and extract text from images.'
-      },
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'text',
-            text: 'Please extract all the text visible in this image.'
-          },
-          {
-            type: 'image_url',
-            image_url: {
-              url: imageDataUrl // Base64 encoded image
-            }
-          }
-        ]
-      }
-    ],
-    model: modelName,
-    temperature: 0.1,
-    max_tokens: 1000
+  "Vision": {
+    "AiProvider": "github",
+    "PythonPath": "C:\\Users\\YourUsername\\.conda\\envs\\confirmed_vision_app\\python.exe",
+    "PythonLibPath": "C:\\Users\\YourUsername\\.conda\\envs\\confirmed_vision_app\\Lib\\site-packages"
   }
-});
-
-// Handle response (identical for both providers)
-if (isUnexpected(response)) {
-  throw new Error(response.body?.error?.message || 'AI inference failed');
 }
-
-const extractedText = response.body.choices[0].message.content;
 ```
 
-### Supported Models
+### 5. Start the C# Backend
+```bash
+cd csharp-backend
+dotnet restore
+dotnet build
+dotnet run
+```
+Backend will start on `http://0.0.0.0:5000`
 
-#### GitHub AI Models (Development)
-- **Llama-3.2-11B-Vision-Instruct**: Multimodal model for vision and text
-- **Rate Limits**: GitHub Pro provides generous limits for development
-- **Cost**: Free with GitHub Pro subscription
+### 6. Configure React Native App
+Find your PC's IP address:
+```bash
+ipconfig
+```
+Look for IPv4 Address under your WiFi adapter (e.g., 192.168.1.100)
 
-#### Azure AI Models (Production)
-- **GPT-4o**: Latest multimodal model with vision capabilities
-- **GPT-4 Vision**: Dedicated vision-language model
-- **Llama models**: Open-source alternatives (if available in your region)
-- **Custom Models**: Deploy your own fine-tuned models
-- **Scaling**: Auto-scaling based on demand
-- **SLA**: Enterprise-grade service level agreements
+Update `src/App.tsx`:
+```typescript
+const BACKEND_URL = 'http://YOUR_PC_IP:5000'; // Replace with your IP
+```
 
-### Migration from GitHub AI to Azure AI
+### 7. Start React Native App
+```bash
+# Install dependencies
+npm install
 
-To migrate from development (GitHub AI) to production (Azure AI):
+# Start Metro bundler
+npm start
 
-1. **Update Environment Variables**:
-   ```env
-   # Change from GitHub AI configuration
-   # GITHUB_TOKEN=xxx
-   # AI_PROVIDER=github
-   
-   # To Azure AI configuration
-   AZURE_AI_KEY=your_azure_key
-   AZURE_AI_ENDPOINT=https://your-service.cognitiveservices.azure.com/
-   AZURE_AI_MODEL_NAME=gpt-4o
-   AI_PROVIDER=azure
+# In another terminal, build and run on Android
+npx react-native run-android
+```
+
+## 🔧 Detailed Setup Instructions
+
+### Python Environment Setup
+
+The application uses Python for AI vision processing. Here's how to set it up:
+
+1. **Install Conda/Anaconda** if not already installed
+2. **Create dedicated environment**:
+   ```bash
+   conda create -n confirmed_vision_app python=3.11
+   conda activate confirmed_vision_app
+   ```
+3. **Install required packages**:
+   ```bash
+   cd csharp-backend/python_scripts
+   pip install -r requirements.txt
    ```
 
-2. **Update Backend Code** (if using universal configuration):
-   - No code changes needed! The same Azure AI Inference SDK handles both providers
-   - Only environment variables need to be updated
+### GitHub AI Token Setup
 
-3. **Test the Migration**:
-   - Start backend with new environment variables
-   - Verify AI provider logs show "Using Azure AI service"
-   - Test vision inference functionality
-   - Monitor response times and accuracy
+1. **Get GitHub Token**:
+   - Go to [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens)
+   - Create a new token with appropriate permissions
+   - Copy the token
 
-### Benefits of This Architecture
+2. **Configure Token**:
+   - Add to `csharp-backend/.env` file
+   - Never commit this file to version control
 
-#### Development Benefits
-- **Cost-Effective**: Free development with GitHub Pro
-- **Quick Setup**: Minimal configuration required
-- **Rate Limits**: Sufficient for development and testing
+### Network Configuration
 
-#### Production Benefits
-- **Enterprise Scale**: Azure AI handles production workloads
-- **SLA Guarantees**: 99.9% uptime commitment
-- **Global Deployment**: Multiple regions for low latency
-- **Security**: Enterprise-grade security and compliance
-- **Cost Control**: Pay-per-use with predictable pricing
+For the mobile app to communicate with the backend:
 
-#### Migration Benefits
-- **Zero Code Changes**: Same SDK for both providers
-- **Gradual Migration**: Switch services without rewriting application logic
-- **Consistent API**: Identical request/response patterns
-- **Future-Proof**: Easy to adopt new Azure AI features
+1. **Find your PC's IP address**:
+   ```bash
+   ipconfig
+   ```
+2. **Ensure both devices are on same WiFi**
+3. **Update the React Native app** with your PC's IP
+4. **Configure Windows Firewall** to allow connections on port 5000
 
-## Frontend Features
+### Android Development Setup
 
-### UI Components
-- **Health Status Indicator**: Shows backend connectivity
-- **Vision LLM Button**: Initiates AI-powered text extraction
-- **Loading Indicator**: Shows during model inference
-- **Error Display**: Shows API errors
-- **Image Preview**: Displays captured image
-- **Scrollable Text Box**: Shows extracted text results
-- **Clear Function**: Resets image and text
+1. **Install Android Studio**
+2. **Set up Android SDK and tools**
+3. **Enable USB debugging** on your Android device
+4. **Connect device via USB**
+5. **Verify device connection**:
+   ```bash
+   adb devices
+   ```
 
-### Image Processing Flow
-1. User taps Vision LLM button
-2. Camera launches with full-quality settings
-3. User captures image
-4. Image sent to backend vision endpoint
-5. Backend processes with AI model
-6. Results displayed in text box
-7. Image automatically cleaned up on backend
+## 📁 Project Structure
 
-## Troubleshooting
+```
+AndroidVisionApp/
+├── src/                          # React Native source code
+│   ├── App.tsx                   # Main app component
+│   └── components/               # UI components
+│       ├── ButtonRow.tsx         # Action buttons
+│       ├── ImageViewer.tsx       # Image display
+│       └── TextBox.tsx           # Results display
+├── csharp-backend/               # C# backend API
+│   ├── Controllers/              # API controllers
+│   │   └── VisionController.cs   # Vision processing endpoints
+│   ├── Services/                 # Business logic
+│   │   ├── VisionService.cs      # Main vision service
+│   │   └── PythonVisionProcessor.cs # Python integration
+│   ├── Models/                   # Data models
+│   │   ├── VisionResult.cs       # API response models
+│   │   └── HealthResponse.cs     # Health check model
+│   ├── Configuration/            # Configuration classes
+│   │   └── VisionConfiguration.cs # App settings
+│   ├── python_scripts/           # Python AI processing
+│   │   ├── github_vision.py      # GitHub AI integration
+│   │   ├── azure_vision.py       # Azure AI integration
+│   │   ├── image_utils.py        # Image utilities
+│   │   └── requirements.txt      # Python dependencies
+│   ├── Program.cs                # Application entry point
+│   ├── appsettings.json          # Configuration file
+│   ├── .env                      # Environment variables (not in git)
+│   └── VisionService.csproj      # Project file
+├── android/                      # Android-specific files
+├── ios/                          # iOS-specific files (if needed)
+├── package.json                  # Node.js dependencies
+├── .gitignore                    # Git ignore rules
+└── README.md                     # This file
+```
 
-### Backend Issues
+## 💡 Code Logic Overview
 
-#### GitHub AI Issues
-- **"GITHUB_TOKEN= false"**: GitHub token not found or invalid
-  - Verify token is in `.env` file
-  - Ensure token has correct scopes (`repo`, `read:packages`)
-  - Check token hasn't expired
-- **Rate Limiting**: GitHub AI has rate limits even with Pro
-  - Wait for rate limit reset
-  - Consider switching to Azure AI for higher limits
-- **Model Not Available**: Some models may be region-restricted
-  - Try different model names
-  - Check GitHub AI model availability
+### React Native Frontend Flow
 
-#### Azure AI Issues
-- **"AZURE_AI_KEY= false"**: Azure credentials not found or invalid
-  - Verify all Azure environment variables are set
-  - Check Azure AI service is properly created
-  - Ensure API keys are correct and not expired
-- **Model Deployment Issues**: Model not deployed or accessible
-  - Verify model is deployed in Azure AI Studio
-  - Check deployment name matches environment variable
-  - Ensure sufficient quota and compute resources
-- **Regional Availability**: Some models only available in specific regions
-  - Check model availability in your Azure region
-  - Consider deploying in different region if needed
-- **Quota Exceeded**: Azure AI usage limits reached
-  - Check quota usage in Azure Portal
-  - Request quota increases if needed
-  - Monitor usage patterns
+1. **App Initialization** (`src/App.tsx`):
+   - Performs health check with backend
+   - Displays connection status
+   - Handles camera permissions
 
-#### Common Backend Issues
-- **Port Already in Use**: Port 3000 occupied by another process
-  - Kill existing process: `npx kill-port 3000`
-  - Change port in `.env`: `PORT=3001`
-- **Uploads Folder Issues**: Permission errors
-  - Check folder permissions
-  - Ensure backend has write access to project directory
-- **CORS Errors**: Frontend can't connect to backend
-  - Verify CORS is enabled in server.js
-  - Check frontend URL matches backend configuration
+2. **Image Capture**:
+   - Uses `react-native-image-picker` for camera access
+   - Captures high-quality photos
+   - Converts to FormData for upload
 
-### Frontend Issues
+3. **API Communication**:
+   - Sends multipart/form-data to `/vision` endpoint
+   - Displays loading indicator during processing
+   - Shows extracted text results
 
-#### React Native Setup
-- **Android Build Failures**: 
-  - Clean build: `cd android && ./gradlew clean && cd ..`
-  - Rebuild: `npm run android`
-  - Check Android SDK and Java versions
-- **Network Connectivity**: App can't reach backend
-  - Verify backend URL in `src/App.tsx`
-  - Use your machine's IP address, not `localhost`
-  - Check network security configuration
-- **Image Picker Issues**: Camera not working
-  - Verify camera permissions in Android manifest
-  - Test on physical device (camera doesn't work in emulator)
-  - Check React Native image picker setup
+### C# Backend Flow
 
-#### Network Configuration
-- **HTTP vs HTTPS**: Mixed content errors
-  - Backend uses HTTP for development
-  - Ensure Android app allows clear text traffic
-  - For production, use HTTPS with proper SSL certificates
+1. **Program.cs**:
+   - Configures services and middleware
+   - Sets up CORS for mobile app
+   - Initializes Python integration
+   - Configures logging with Serilog
 
-### API Response Issues
+2. **VisionController.cs**:
+   - Handles `/health` endpoint for connectivity checks
+   - Processes `/vision` POST requests
+   - Manages file uploads and cleanup
 
-#### GitHub AI Responses
-- **Authentication Errors**: Token invalid or insufficient permissions
-- **Model Errors**: Specific model unavailable or overloaded
-- **Rate Limits**: API calls exceeded for billing period
+3. **VisionService.cs**:
+   - Main business logic for vision processing
+   - Handles file I/O operations
+   - Manages temporary file cleanup
+   - Coordinates with Python processor
 
-#### Azure AI Responses
-- **Deployment Errors**: Model deployment not found or inactive
-- **Quota Errors**: Usage limits exceeded for subscription
-- **Regional Errors**: Model not available in selected region
+4. **PythonVisionProcessor.cs**:
+   - Initializes Python runtime
+   - Loads Python scripts dynamically
+   - Executes AI vision processing
+   - Manages Python environment and packages
 
-### Performance Issues
+### Python AI Processing
 
-#### Image Processing
-- **Large Images**: Processing very large images may timeout
-  - Consider implementing client-side image resizing
-  - Monitor backend memory usage
-- **Network Timeouts**: Slow internet connection
-  - Increase timeout values in axios configuration
-  - Implement retry logic for failed requests
+1. **github_vision.py**:
+   - Interfaces with GitHub AI models API
+   - Uses Meta Llama-3.2-11B-Vision-Instruct
+   - Processes base64 encoded images
+   - Returns extracted text
 
-#### AI Model Performance
-- **Slow Responses**: Model inference taking too long
-  - GitHub AI: Try during off-peak hours
-  - Azure AI: Scale up compute resources or use faster models
-  - Monitor response times and set appropriate timeouts
+2. **azure_vision.py**:
+   - Alternative Azure AI integration
+   - Uses Azure OpenAI vision models
+   - Fallback option for production
 
-### Development Tips
+3. **image_utils.py**:
+   - Image validation and processing utilities
+   - Base64 encoding/decoding
+   - Image format verification
 
-#### Environment Management
-- **Multiple Environments**: Use different `.env` files
-  ```bash
-  cp .env .env.development
-  cp .env .env.production
-  ```
-- **Configuration Validation**: Add startup checks
-  ```javascript
-  // Validate required environment variables
-  const requiredEnvVars = AI_PROVIDER === 'azure' 
-    ? ['AZURE_AI_KEY', 'AZURE_AI_ENDPOINT'] 
-    : ['GITHUB_TOKEN'];
-  
-  for (const envVar of requiredEnvVars) {
-    if (!process.env[envVar]) {
-      throw new Error(`Missing required environment variable: ${envVar}`);
-    }
-  }
-  ```
+## 🌐 API Endpoints
 
-#### Debugging
-- **Enable Verbose Logging**: Add more console.log statements
-- **Network Debugging**: Use tools like Postman to test API endpoints
-- **Frontend Debugging**: Use React Native debugger for frontend issues
+### Health Check
+```
+GET /health
+Response: {"status":"ok","timestamp":"2025-01-01T00:00:00Z","version":"1.0.0"}
+```
 
-#### Testing Strategy
-1. **Test Backend Independently**: Use curl or Postman
-2. **Test Frontend Components**: Test UI components separately
-3. **Integration Testing**: Test full image capture → processing → display flow
-4. **Provider Switching**: Test both GitHub AI and Azure AI configurations
+### Vision Processing
+```
+POST /vision
+Content-Type: multipart/form-data
+Body: FormData with 'image' field
+Response: {"result":"extracted text","imageUrl":"temp_url","success":true}
+```
 
-### Getting Help
+## 🔐 Security Features
 
-#### Documentation
-- [Azure AI Services Documentation](https://docs.microsoft.com/en-us/azure/cognitive-services/)
-- [Azure AI Inference SDK](https://github.com/Azure/azure-sdk-for-js/tree/main/sdk/ai/ai-inference-rest)
-- [GitHub AI Models](https://github.com/marketplace/models)
-- [React Native Documentation](https://reactnative.dev/docs/getting-started)
+- **Environment Variables**: Sensitive data stored in `.env` files
+- **CORS Configuration**: Controlled cross-origin access
+- **File Cleanup**: Automatic deletion of uploaded files
+- **Input Validation**: Image file validation and size limits
+- **Error Handling**: Comprehensive error logging and user feedback
 
-#### Support Channels
-- **Azure AI**: Azure Support Portal or Stack Overflow with `azure-cognitive-services` tag
-- **GitHub AI**: GitHub Support or GitHub Community Discussions
-- **React Native**: React Native Community Discord or Stack Overflow
+## 🛠️ Development Workflow
 
-#### Best Practices for Production
-- **Monitoring**: Implement application monitoring (Azure Application Insights)
-- **Error Handling**: Add comprehensive error handling and logging
-- **Security**: Use Azure Key Vault for credential management
-- **Scaling**: Plan for horizontal scaling with multiple backend instances
-- **Caching**: Implement caching for frequently processed images
-- **Cost Management**: Monitor AI service usage and costs
+### Backend Development
+```bash
+# Navigate to backend
+cd csharp-backend
+
+# Build and run
+dotnet build
+dotnet run
+
+# Run with hot reload
+dotnet watch run
+```
+
+### Frontend Development
+```bash
+# Start Metro bundler
+npm start
+
+# Build for Android (in separate terminal)
+npx react-native run-android
+
+# For debugging
+npx react-native log-android
+```
+
+### Python Development
+```bash
+# Activate environment
+conda activate confirmed_vision_app
+
+# Test Python scripts directly
+cd csharp-backend/python_scripts
+python github_vision.py <base64_image> <github_token>
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Backend Connection Failed**:
+   - Check if C# backend is running on port 5000
+   - Verify IP address in React Native app
+   - Ensure Windows Firewall allows port 5000
+   - Confirm both devices on same WiFi network
+
+2. **Python Integration Errors**:
+   - Verify conda environment is active
+   - Check Python path in `appsettings.json`
+   - Ensure all Python packages are installed
+   - Check Python scripts are in correct directory
+
+3. **Android Build Issues**:
+   - Clean and rebuild: `cd android && ./gradlew clean`
+   - Check Android SDK installation
+   - Verify USB debugging is enabled
+   - Reset Metro bundler cache: `npx react-native start --reset-cache`
+
+4. **AI Processing Failures**:
+   - Verify GitHub token is valid and has permissions
+   - Check network connectivity
+   - Ensure image is valid format (JPEG/PNG)
+   - Monitor backend logs for detailed error messages
+
+### Debug Commands
+
+```bash
+# Check backend logs
+cd csharp-backend && dotnet run
+
+# Check Android device connection
+adb devices
+
+# View Android logs
+npx react-native log-android
+
+# Test backend health
+curl http://localhost:5000/health
+
+# Check Python environment
+conda list
+```
+
+## 📝 Environment Variables
+
+### Required Variables (.env file)
+```env
+GITHUB_TOKEN=your_github_token_here
+AI_PROVIDER=github
+```
+
+### Optional Variables
+```env
+AZURE_AI_KEY=your_azure_key
+AZURE_AI_ENDPOINT=your_azure_endpoint
+AZURE_AI_REGION=your_azure_region
+PORT=5000
+```
+
+## 🎯 Features
+
+- ✅ **Camera Integration**: Native camera access with high-quality image capture
+- ✅ **Vision AI Processing**: Advanced text extraction using GitHub AI models
+- ✅ **Real-time Processing**: Live image processing with loading indicators
+- ✅ **Cross-platform**: React Native app works on Android (iOS ready)
+- ✅ **Scalable Backend**: C# .NET backend with Python AI integration
+- ✅ **Error Handling**: Comprehensive error handling and user feedback
+- ✅ **Logging**: Detailed logging for debugging and monitoring
+- ✅ **Configuration**: Environment-based configuration for different deployments
+
+## 🔄 Version History
+
+- **v1.0.0**: Initial release with GitHub AI integration
+- **v0.9.0**: Migrated from Node.js to C# backend
+- **v0.8.0**: Added Python AI processing integration
+- **v0.7.0**: Implemented React Native frontend
+
+## 📄 License
+
+This project is licensed under the MIT License. See LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 🆘 Support
+
+For issues and questions:
+1. Check this README for troubleshooting
+2. Review the logs for detailed error messages
+3. Create an issue in the repository
+4. Provide logs and system information when reporting issues
+
+---
+
+**Happy coding! 🚀**

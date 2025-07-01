@@ -24,7 +24,6 @@ def process_image(image_base64, github_token):
         # Prepare the request
         data_url = f'data:image/jpeg;base64,{image_base64}'
 
-        # Create messages for GitHub AI API (identical to Node.js implementation)
         messages = [
             {
                 'role': 'system',
@@ -47,7 +46,6 @@ def process_image(image_base64, github_token):
             }
         ]
 
-        # Make request to GitHub AI (replicating Node.js Azure AI Inference SDK call)
         headers = {
             'Authorization': f'Bearer {github_token}',
             'Content-Type': 'application/json'

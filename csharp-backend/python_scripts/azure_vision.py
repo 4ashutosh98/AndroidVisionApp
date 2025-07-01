@@ -25,7 +25,6 @@ def process_image(image_base64, azure_endpoint, azure_key):
         # Prepare the request
         data_url = f'data:image/jpeg;base64,{image_base64}'
 
-        # Create messages for Azure AI API (identical to Node.js implementation)
         messages = [
             {
                 'role': 'system',
@@ -48,7 +47,6 @@ def process_image(image_base64, azure_endpoint, azure_key):
             }
         ]
 
-        # Make request to Azure AI (replicating Node.js Azure AI Inference SDK call)
         headers = {
             'Authorization': f'Bearer {azure_key}',
             'Content-Type': 'application/json'
