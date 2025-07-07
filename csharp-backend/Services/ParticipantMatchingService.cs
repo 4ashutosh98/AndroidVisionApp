@@ -62,7 +62,7 @@ public class ParticipantMatchingService : IParticipantMatchingService
     private readonly ILogger<ParticipantMatchingService> _logger;
     
     // Fuzzy matching configuration
-    private const int MinimumConfidenceThreshold = 60; // 50% minimum match
+    private const int MinimumConfidenceThreshold = 50; // 50% minimum match
     private const int MaxResults = 5; // Return top 5 matches
     private const int FullNameBonus = 10; // Bonus points for full name matches
 
