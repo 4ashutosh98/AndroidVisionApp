@@ -5,6 +5,38 @@ import axios from 'axios';
 // Replace with your backend URL - use localhost for development
 const BACKEND_URL = 'http://localhost:5000';
 
+// Types for participant matching
+interface Participant {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  companyName?: string;
+  jobTitle?: string;
+  email?: string;
+}
+
+interface ParticipantMatch {
+  participant: Participant;
+  confidenceScore: number;
+  matchedField: string;
+}
+
+interface ParticipantMatches {
+  success: boolean;
+  searchTerm: string;
+  totalMatches: number;
+  matches: ParticipantMatch[];
+  searchTimestamp: string;
+}
+
+interface VisionResponse {
+  result: string;
+  imageUrl: string;
+  success: boolean;
+  participantMatches?: ParticipantMatches;
+}
+
 const App: React.FC = () => {
   // State management
   const [handshake, setHandshake] = useState<'Connecting' | 'Connected' | 'Error'>('Connecting');
@@ -13,6 +45,7 @@ const App: React.FC = () => {
   const [extractedText, setExtractedText] = useState<string>('');
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [participantMatches, setParticipantMatches] = useState<ParticipantMatches | null>(null);
 
   const webcamRef = useRef<Webcam>(null);
 
@@ -47,6 +80,7 @@ const App: React.FC = () => {
     
     setLoading(true);
     setApiError(null);
+    setParticipantMatches(null);
     
     try {
       const formData = new FormData();
@@ -62,7 +96,18 @@ const App: React.FC = () => {
       });
 
       console.log('[Frontend] Received response:', apiResponse.data);
+      
+      // Handle vision results
       setExtractedText(apiResponse.data.result || 'No text found in image');
+      
+      // Handle participant matching results
+      if (apiResponse.data.participantMatches) {
+        setParticipantMatches(apiResponse.data.participantMatches);
+        console.log('[Frontend] Found participant matches:', apiResponse.data.participantMatches);
+      } else {
+        console.log('[Frontend] No participant matches found');
+      }
+      
       setCurrentView('results');
       
     } catch (error: any) {
@@ -197,6 +242,55 @@ const App: React.FC = () => {
             <div className="result-text">
               {extractedText}
             </div>
+
+            {/* Participant Matching Results */}
+            {participantMatches && participantMatches.success && (
+              <div className="participant-matches">
+                <h3 className="result-title">
+                  Participant Matches ({participantMatches.totalMatches} found):
+                </h3>
+                {participantMatches.matches.length > 0 ? (
+                  <div className="matches-list">
+                    {participantMatches.matches.map((match, index) => (
+                      <div key={match.participant.id} className="match-item">
+                        <div className="match-header">
+                          <span className="match-rank">#{index + 1}</span>
+                          <span className="match-confidence">{match.confidenceScore}% match</span>
+                        </div>
+                        <div className="match-details">
+                          <div className="participant-name">
+                            {match.participant.fullName}
+                          </div>
+                          {match.participant.companyName && (
+                            <div className="participant-company">
+                              {match.participant.companyName}
+                            </div>
+                          )}
+                          {match.participant.jobTitle && (
+                            <div className="participant-title">
+                              {match.participant.jobTitle}
+                            </div>
+                          )}
+                          {match.participant.email && (
+                            <div className="participant-email">
+                              {match.participant.email}
+                            </div>
+                          )}
+                          <div className="match-info">
+                            Matched on: {match.matchedField}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-matches">
+                    No participant matches found above confidence threshold.
+                  </div>
+                )}
+              </div>
+            )}
+
             <div>
               <button 
                 className="camera-button"

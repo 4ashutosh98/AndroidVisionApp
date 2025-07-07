@@ -27,14 +27,16 @@ def process_image(image_base64, github_token):
         messages = [
             {
                 'role': 'system',
-                'content': 'You are a helpful assistant that can read and extract text from images using advanced vision understanding.'
+                'content': """You are a helpful assistant that can read and extract text from images of scanned nametags using advanced vision understanding.
+                after extracting the text, provide me only with the name of the person in the image, without any additional information or formatting.
+                Return the name as "firstname lastname" without any titles, prefixes, or suffixes."""
             },
             {
                 'role': 'user',
                 'content': [
                     {
                         'type': 'text',
-                        'text': 'Please extract all the text visible in this image. Only return the text content, nothing else.'
+                        'text': 'Please extract the name of the person from this scanned nametag, nothing else.'
                     },
                     {
                         'type': 'image_url',

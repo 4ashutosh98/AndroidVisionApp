@@ -2,6 +2,8 @@ using Python.Runtime;
 using Serilog;
 using VisionService.Services;
 using VisionService.Configuration;
+using VisionService.Data;
+using Microsoft.EntityFrameworkCore;
 using DotNetEnv;
 
 // Load environment variables from .env file
@@ -37,6 +39,13 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add Entity Framework with in-memory database
+builder.Services.AddDbContext<ParticipantDbContext>(options =>
+{
+    options.UseInMemoryDatabase("ParticipantsDB");
+    options.EnableSensitiveDataLogging(builder.Environment.IsDevelopment());
+});
+
 // Register custom services
 builder.Services.Configure<VisionConfiguration>(builder.Configuration.GetSection("Vision"));
 
@@ -59,8 +68,17 @@ builder.Services.PostConfigure<VisionConfiguration>(config =>
 
 builder.Services.AddSingleton<IPythonVisionProcessor, PythonVisionProcessor>();
 builder.Services.AddScoped<IVisionService, VisionService.Services.VisionService>();
+builder.Services.AddScoped<IParticipantMatchingService, ParticipantMatchingService>();
 
 var app = builder.Build();
+
+// Initialize the database with seed data
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<ParticipantDbContext>();
+    context.Database.EnsureCreated();
+    Log.Information("[Backend] Database initialized with {Count} participants", context.Participants.Count());
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())

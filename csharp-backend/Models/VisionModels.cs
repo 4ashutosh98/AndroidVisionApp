@@ -19,3 +19,24 @@ public class HealthResponse
     public DateTime Timestamp { get; set; } = DateTime.UtcNow;
     public string Version { get; set; } = "1.0.0";
 }
+
+/// <summary>
+/// Request model for participant search endpoint
+/// </summary>
+public class ParticipantSearchRequest
+{
+    public string SearchTerm { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// Request model for adding new participants
+/// </summary>
+public class AddParticipantRequest
+{
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string? CompanyName { get; set; }
+    public string? JobTitle { get; set; }
+    public string? Email { get; set; }
+    public string? PhoneNumber { get; set; }
+}
