@@ -110,7 +110,11 @@ public class ParticipantDbContext : DbContext
             new() { Id = 42, FirstName = "Anna-Maria", LastName = "Kowalski", CompanyName = "SAP", JobTitle = "Enterprise Consultant", Email = "anna.kowalski@sap.com" },
             new() { Id = 43, FirstName = "Jean-Pierre", LastName = "Dubois", CompanyName = "Orange", JobTitle = "Telecom Engineer", Email = "jp.dubois@orange.fr" },
             new() { Id = 44, FirstName = "Xiaowei", LastName = "Zhang", CompanyName = "Alibaba", JobTitle = "E-commerce Developer", Email = "xiaowei.zhang@alibaba.com" },
-            new() { Id = 45, FirstName = "Isabella", LastName = "Rossi", CompanyName = "Ferrari", JobTitle = "Automotive Software", Email = "isabella.rossi@ferrari.it" }
+            new() { Id = 45, FirstName = "Isabella", LastName = "Rossi", CompanyName = "Ferrari", JobTitle = "Automotive Software", Email = "isabella.rossi@ferrari.it" },
+            
+            // Custom participants
+            new() { Id = 46, FirstName = "David", LastName = "Radin", CompanyName = "Vision AI Corp", JobTitle = "AI Engineer", Email = "david.radin@visionai.com" },
+            new() { Id = 47, FirstName = "Ashutosh", LastName = "Choudhari", CompanyName = "Tech Solutions Inc", JobTitle = "Software Developer", Email = "ashutosh.choudhari@techsolutions.com" }
         };
 
         modelBuilder.Entity<Participant>().HasData(participants);

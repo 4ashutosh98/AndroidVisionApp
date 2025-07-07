@@ -62,7 +62,7 @@ public class ParticipantMatchingService : IParticipantMatchingService
     private readonly ILogger<ParticipantMatchingService> _logger;
     
     // Fuzzy matching configuration
-    private const int MinimumConfidenceThreshold = 60; // 60% minimum match
+    private const int MinimumConfidenceThreshold = 60; // 50% minimum match
     private const int MaxResults = 5; // Return top 5 matches
     private const int FullNameBonus = 10; // Bonus points for full name matches
 
@@ -159,30 +159,34 @@ public class ParticipantMatchingService : IParticipantMatchingService
         var bestScore = 0;
         var bestField = "";
 
-        // Test against different participant fields
-        var candidates = new Dictionary<string, string>
+        // Test against different participant fields with priority scoring
+        var candidates = new Dictionary<string, (string value, int priority)>
         {
-            ["Full Name"] = CleanText(participant.FullName),
-            ["First Name"] = CleanText(participant.FirstName),
-            ["Last Name"] = CleanText(participant.LastName),
-            ["Company"] = CleanText(participant.CompanyName ?? "")
+            ["Full Name"] = (CleanText(participant.FullName), 100),        // Highest priority
+            ["Last Name"] = (CleanText(participant.LastName), 80),         // High priority  
+            ["First Name"] = (CleanText(participant.FirstName), 60),       // Medium priority
+            ["Company"] = (CleanText(participant.CompanyName ?? ""), 40)   // Low priority
         };
 
         foreach (var candidate in candidates)
         {
-            if (string.IsNullOrWhiteSpace(candidate.Value)) continue;
+            if (string.IsNullOrWhiteSpace(candidate.Value.value)) continue;
 
-            var score = CalculateFuzzyScore(searchTerm, candidate.Value);
+            var fuzzyScore = CalculateFuzzyScore(searchTerm, candidate.Value.value);
             
-            // Bonus for full name matches (more comprehensive)
-            if (candidate.Key == "Full Name" && score > 0)
+            // Calculate weighted score: (fuzzy_score * field_priority) / 100
+            // This ensures full name exact matches always rank higher than partial matches
+            var weightedScore = (fuzzyScore * candidate.Value.priority) / 100;
+            
+            // Additional bonus for exact full name matches
+            if (candidate.Key == "Full Name" && fuzzyScore == 100)
             {
-                score = Math.Min(100, score + FullNameBonus);
+                weightedScore += 20; // Extra boost for perfect full name match
             }
 
-            if (score > bestScore)
+            if (weightedScore > bestScore)
             {
-                bestScore = score;
+                bestScore = weightedScore;
                 bestField = candidate.Key;
             }
         }
